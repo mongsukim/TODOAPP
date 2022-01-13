@@ -55,12 +55,18 @@
 
         $('.delete').click(function(e){
           var postNum = e.target.dataset.id;
+          var clicked = $(this);
           $.ajax({
           method : 'DELETE',
           url :'/delete',
           data: {_id: postNum }
         }).done(function(result){
+          console.log('성공')
+          clicked.parent('li').fadeOut();
 
+
+        }).fail(function(xhr,textStatus,errorThrown){
+          console.log(xhr,textStatus,errorThrown)
         })
 
         })
