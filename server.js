@@ -38,7 +38,7 @@ app.post('/add', function(req,res){
     db.collection('counter').findOne({name : '게시물갯수'}, function(error, result){
         console.log(result.totalPost)
         var totalPostnumber = result.totalPost;
-        db.collection('post').insertOne({ __id: totalPostnumber+1, 제목:req.body.title, 날짜:req.body.date }, function(error,result){
+        db.collection('post').insertOne({ _id: totalPostnumber+1, 제목:req.body.title, 날짜:req.body.date }, function(error,result){
             console.log('저장완료');
             //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가시킨다(수정)
             db.collection('counter').updateOne({name:'게시물갯수'},{$inc : {totalPost:1}},function(error, result){
@@ -57,3 +57,12 @@ app.get('/list', function(req, res){
         res.render('list.ejs', { posts : result });
     });
 });
+
+app.delete('/delete', function(req,res){
+    console.log(req.body);
+    req.body._id = parseInt(req.body._id);
+    db.collection('post').deleteOne(req.body,function(error,result){
+        console.log('삭제완료')
+    })
+
+})
