@@ -82,3 +82,11 @@ app.get('/edit/:id', function(req,res){
         res.render('edit.ejs', { post : result })
     })
 })
+
+app.put('/edit', function(req,res){
+    db.collection('post').updateOne({_id: parseInt(req.body.id) },{ $set : {제목:
+        req.body.title, 날짜: req.body.date }},function(err,result){
+            console.log('수정완료')
+            res.redirect('/list')
+    })
+})
