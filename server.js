@@ -20,7 +20,7 @@ app.use(passport.session());
 
 var db;
 
-MongoClient.connect('mongodb+srv:// : @cluster0.3rmzg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', 
+MongoClient.connect('mongodb+srv://:@cluster0.3rmzg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', 
 function(error, client){
     if (error) return console.log(error);
 
@@ -105,8 +105,7 @@ app.get('/login', function(req,res){
 
 app.post('/login', passport.authenticate('local', {
     failureRedirect : '/fail'
-}
-), function(req,res){
+}), function(req,res){
     res.redirect('/')
 })
 
@@ -116,16 +115,24 @@ passport.use(new LocalStrategy({
     passwordField: 'pw',
     session: true,
     passReqToCallback: false,
-  }, function (입력한아이디, 입력한비번, done) {
-    //console.log(입력한아이디, 입력한비번);
-    db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
-      if (에러) return done(에러)
+  }, function (id, pw, done) {
+    console.log(id, pw);
+    db.collection('login').findOne({ id: id }, function (error, result) {
+      if (error) return done(error)
   
-      if (!결과) return done(null, false, { message: '존재하지않는 아이디요' })
-      if (입력한비번 == 결과.pw) {
-        return done(null, 결과)
+      if (!result) return done(null, false, { message: '존재하지않는 아이디요' })
+      if (pw == result.pw) {
+        return done(null, result)
       } else {
         return done(null, false, { message: '비번틀렸어요' })
       }
     })
   }));
+
+  passport.serializeUser(function (user, done) {
+    done(null, user.id)
+  });
+  
+  passport.deserializeUser(function (id, done) {
+    done(null, {})
+  }); 
