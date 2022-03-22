@@ -12,6 +12,7 @@ app.use('/public', express.static('public'));
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+require('dotenv').config()
 
 app.use(
   session({ secret: '비밀코드', resave: true, saveUninitialized: false })
@@ -20,19 +21,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var db;
-
-MongoClient.connect(
-  'mongodb+srv:// : @cluster0.3rmzg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-  function (error, client) {
-    if (error) return console.log(error);
-
-    db = client.db('todoapp');
-
-    app.listen('8080', function () {
-      console.log('listening on 8080');
-    });
-  }
-);
+MongoClient.connect(process.env.DB_URL, function(err, client){
+  if (err) return console.log(err)
+  db = client.db('todoapp');
+  app.listen(process.env.PORT, function() {
+    console.log('listening on 8080')
+  })
+}) 
 
 app.get('/', function (req, res) {
   res.render('index.ejs');
