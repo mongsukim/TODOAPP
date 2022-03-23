@@ -75,6 +75,15 @@ app.get('/list', function (req, res) {
     });
 });
 
+app.get('/search', (req, res)=> {
+  console.log(req.query.value);
+  db.collection('post').find({ 제목: req.query.value }).toArray((error, result)=> {
+    console.log(result)
+    res.render('resultpage.ejs', { posts: result });
+  })
+})
+
+
 app.delete('/delete', function (req, res) {
   console.log(req.body);
   req.body._id = parseInt(req.body._id);
