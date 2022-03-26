@@ -37,32 +37,7 @@ app.get('/write', function (req, res) {
   res.sendFile(__dirname + '/write.html');
 });
 
-app.post('/add', function (req, res) {
-  res.send('전송완료');
-  db.collection('counter').findOne(
-    { name: '게시물갯수' },
-    function (error, result) {
-      console.log(result.totalPost);
-      var totalPostnumber = result.totalPost;
-      db.collection('post').insertOne(
-        { _id: totalPostnumber + 1, 제목: req.body.title, 날짜: req.body.date },
-        function (error, result) {
-          console.log('저장완료');
-          //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가시킨다(수정)
-          db.collection('counter').updateOne(
-            { name: '게시물갯수' },
-            { $inc: { totalPost: 1 } },
-            function (error, result) {
-              if (error) {
-                return console.log(error);
-              }
-            }
-          );
-        }
-      );
-    }
-  );
-});
+
 
 // list로 get요청으로 접속하면 db에 저장된 데이터들로 꾸며진 html을 보여주기
 
@@ -96,14 +71,6 @@ app.get('/search', (req, res)=> {
 })
 
 
-app.delete('/delete', function (req, res) {
-  console.log(req.body);
-  req.body._id = parseInt(req.body._id);
-  db.collection('post').deleteOne(req.body, function (error, result) {
-    console.log('삭제완료');
-    res.status(200).send({ message: '성공했습니다' });
-  });
-});
 
 app.get('/detail/:id', function (req, res) {
   db.collection('post').findOne(
@@ -195,4 +162,50 @@ passport.deserializeUser(function (id, done) {
   db.collection('login').findOne({id: id}, function (err,result) {
     done(null, result);  
   })
+});
+
+app.post('/register', function (req, res) {
+  db.collection('login').insertOne({ id: req.body.id, pw: req.body.pw },
+    function (error, result) {
+      res.redirect('/')
+  })
+})
+
+app.post('/add', function (req, res) {
+  res.send('전송완료');
+  db.collection('counter').findOne({ name: '게시물갯수' },function (error, result) {
+      console.log(result.totalPost);
+      var totalPostnumber = result.totalPost;
+      var toSave = { _id: totalPostnumber + 1, 제목: req.body.title, 날짜: req.body.date, 작성자: req.user._id
+ }
+      
+      db.collection('post').insertOne(toSave, function(error,result){
+          console.log('저장완료');
+          //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가시킨다(수정)
+          db.collection('counter').updateOne(
+            { name: '게시물갯수' },
+            { $inc: { totalPost: 1 } },
+            function (error, result) {
+              if (error) {
+                return console.log(error);
+              }
+            }
+          );
+        }
+      );
+    }
+  );
+});
+
+app.delete('/delete', function (req, res) {
+  console.log(req.body);
+  req.body._id = parseInt(req.body._id);
+
+  var toDeleteData = { _id: req.body._id, 작성자 : req.user._id }
+
+  db.collection('post').deleteOne(toDeleteData, function (error, result) {
+    console.log('삭제완료');
+    if(result){console.log(result)}
+    res.status(200).send({ message: '성공했습니다' });
+  });
 });
