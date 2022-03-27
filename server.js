@@ -14,6 +14,18 @@ const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 require('dotenv').config()
 
+let multer = require('multer');
+var storage = multer.diskStorage({
+
+  destination : function(req, file, cb){
+    cb(null, './public/image')
+  },
+  filename : function(req, file, cb){
+    cb(null, file.originalname )
+  }
+})
+var upload = multer({storage : storage});
+
 app.use(
   session({ secret: '비밀코드', resave: true, saveUninitialized: false })
 );
@@ -209,3 +221,19 @@ app.delete('/delete', function (req, res) {
     res.status(200).send({ message: '성공했습니다' });
   });
 });
+
+
+app.use('/shop', require('./routes/shop.js'))
+
+app.use('/board', require('./routes/board.js'))
+
+app.get('/upload', function (req, res) {
+  res.render('upload.ejs');
+});
+
+app.post('/upload', upload.single('uploadfile'), function (req, res) {
+  res.send('업로드완료');
+});
+app.get('/image/:imageName', function(req, res){
+  res.sendFile( __dirname + '/public/image/' + req.params.imageName )
+})
