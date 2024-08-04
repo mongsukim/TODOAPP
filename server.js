@@ -30,14 +30,18 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-var db;
-MongoClient.connect(process.env.DB_URL, function (err, client) {
-    if (err) return console.log(err)
-    db = client.db('todoapp');
-    app.listen(process.env.PORT, function () {
-        console.log('listening on 8080')
+let db;
+
+MongoClient.connect(process.env.DB_URL).then((client) => {
+    console.log('db연결성공')
+    db = client.db('forum')
+    app.listen(8080, () => {
+        console.log('http://localhost:8080에서 서버실행중')
     })
-});
+}).catch((err) => {
+    console.log('err')
+})
+
 
 app.get('/', function (req, res) {
     res.render('index.ejs');
