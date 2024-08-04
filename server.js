@@ -1,5 +1,5 @@
 const express = require('express');
-const res = require('express/lib/response');
+ const res = require('express/lib/response');
 const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -236,4 +236,12 @@ app.post('/upload', upload.single('uploadfile'), function (req, res) {
 });
 app.get('/image/:imageName', function(req, res){
   res.sendFile( __dirname + '/public/image/' + req.params.imageName )
-})
+const app = express();
+
+app.listen(8080, function(){
+    console.log('listening on 8080')
+});
+
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/index.html')
+ })
