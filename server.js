@@ -3,13 +3,13 @@ const app = express();
 require("dotenv").config();
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
 const MongoClient = require("mongodb").MongoClient;
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
+app.use(express.urlencoded({ extended: true }));
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
@@ -50,14 +50,18 @@ app.get("/", function (req, res) {
 });
 
 app.get("/write", function (req, res) {
-  res.sendFile(__dirname + "/write.html");
+  res.render("write.ejs");
+});
+
+app.post("/add", function (req, res) {
+  console.log(req.body);
+  // res.render("write.ejs");
 });
 
 // db에 있는 데이터 꺼내오기
 app.get("/list", async (req, res) => {
   let result = await db.collection("post").find().toArray();
-  console.log(result[0].title);
-  res.send("db에 있던 게시물");
+  res.render("list.ejs", { posts: result });
 });
 
 app.get("/search", (req, res) => {
