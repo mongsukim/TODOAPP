@@ -2,7 +2,7 @@
 
 ``npm install`
 
-Recent Updates : 24.09.18
+Recent Updates : 24.10.01
 
 Node.js, Express, MongoDB로 TODOAPP 만들기
 
@@ -22,7 +22,7 @@ DB_URL을 확인한다
 PORT=8080
 
 
-DB_URL="mongodb+srv://khskwj:기본비번q1@cluster0.u0ocusr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+DB_URL="mongodb+srv://kh:기본비번q1@cluster0.u0ocusr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
 ```
